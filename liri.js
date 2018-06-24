@@ -34,16 +34,39 @@ inquirer.prompt([
     // Lookup song using Spotify api
   }
   else if (choice.action === "Lookup a Movie") {
-    // Lookup movie using omdb (this is a request method!)
-    request('http://www.omdbapi.com/?apikey=trilogy&t=the incredibles', function (error, response, body) {
-      console.log('error:', error); 
-      console.log('statusCode:', response && response.statusCode); 
-      console.log('body:', body); 
+    // Lookup movie using omdb (use request!)
+    request('http://www.omdbapi.com/?apikey=trilogy&t=' + choice.parameter, function (error, response, body) {
+
+      movie = JSON.parse(body);
+
+      if (choice.parameter === '') {
+        console.log("You didn't type in a movie!");
+      }
+      else if (error) {
+        console.log("Uh oh. Something went wrong! Error: ", error);
+        console.log('statusCode:', response && response.statusCode); 
+      }
+      else {
+        console.log("============================== ");
+        console.log("|| *Title* ---", movie.Title);
+        console.log("|| ..........................");
+        console.log("|| *Year released* ---", movie.Year);
+        console.log("|| ..........................");
+        console.log("|| *IMDB rating* ---", movie.Ratings[0].Value);
+        console.log("|| ..........................");
+        console.log("|| *Rotten Tomatoes score* ---", movie.Ratings[1].Value);
+        console.log("|| ..........................");
+        console.log("|| *Country* ---", movie.Country);
+        console.log("|| ..........................");
+        console.log("|| *Language(s)* ---", movie.Language)
+        console.log("|| ..........................");
+        console.log("|| *Cast* ---", movie.Actors);
+        console.log("==============================");
+        console.log("|| *Plot: ", movie.Plot);
+        console.log("==============================");
+      }
     });
-
   }
-
-
 });
 
 
