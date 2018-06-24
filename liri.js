@@ -29,9 +29,31 @@ inquirer.prompt([
   
   if (choice.action === "Lookup Tweets") {
     // Look up tweets here using Twitter api
+     // Twitter Handling 
+const client = new Twitter(
+  keys.twitter
+);
+ 
+var params = {screen_name: 'nodejs'};
+client.get('statuses/user_timeline', params, function(error, tweets, response) {
+  if (!error) {
+    // console.log(tweets);
+  }
+});
+
   }
   else if (choice.action === "Lookup a Song") {
     // Lookup song using Spotify api
+    // Spotify Handling
+const spotify = new Spotify(keys.spotify);
+
+spotify.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
+    if (err) {
+      // return console.log('Error occurred: ' + err);
+    }
+   
+  // console.log(data); 
+  });
   }
   else if (choice.action === "Lookup a Movie") {
     // Lookup movie using omdb (use request!)
@@ -71,25 +93,4 @@ inquirer.prompt([
 
 
 
- // Twitter Handling 
-const client = new Twitter(
-  keys.twitter
-);
- 
-var params = {screen_name: 'nodejs'};
-client.get('statuses/user_timeline', params, function(error, tweets, response) {
-  if (!error) {
-    // console.log(tweets);
-  }
-});
 
-// Spotify Handling
-const spotify = new Spotify(keys.spotify);
-
-spotify.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
-    if (err) {
-      // return console.log('Error occurred: ' + err);
-    }
-   
-  // console.log(data); 
-  });
