@@ -48,14 +48,17 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
   else if (choice.action === "Search for a Song on Spotify") {
     // Lookup song using Spotify api
     // Spotify Handling
-const spotify = new Spotify(keys.spotify);
+    const spotify = new Spotify(keys.spotify);
+    song = choice.parameter;
+    spotify.search({ type: 'track', query: song }, function(err, data) {
 
-spotify.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
     if (err) {
-      // return console.log('Error occurred: ' + err);
+      console.log("Something went");
     }
-   
-  // console.log(data); 
+    else {
+    console.log(data.tracks.items[0]); //main response obj
+     
+    }
   });
   }
   else if (choice.action === "Lookup a Movie") {
