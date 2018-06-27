@@ -39,8 +39,11 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
   if (!error) {
     for ( let i = 0; i < 20; i++) {
       console.log("============================================================================================================================================")
+      console.log("||");
       console.log( "|| (" + (i+1) + ") " +tweets[i].created_at.split(" +")[0] + "|| > " + tweets[i].text);
+      console.log("||");
     }
+    console.log("============================================================================================================================================")
   }
 });
 
@@ -56,17 +59,15 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
       console.log("Something went");
     }
     else {
-    console.log(data.tracks.items[0]); //main response obj
-  //   * Artist(s)
-     
-  //    * The song's name
-     
-  //    * A preview link of the song from Spotify
-     
-  //    * The album that the song is from
-
-  //  * If no song is provided then your program will default to "The Sign" by Ace of Base.
-     
+    console.log("|=======================================================");
+    console.log("| Artist: ", data.tracks.items[0].artists[0].name);
+    console.log("|=======================================================");
+    console.log("| Track name: ", data.tracks.items[0].name);
+    console.log("|=======================================================");
+    console.log("| Preview link: ", data.tracks.items[0].external_urls.spotify);
+    console.log("|=======================================================");
+    console.log("| Album: ", data.tracks.items[0].album.name);
+    console.log("|=======================================================");
     }
   });
   }
