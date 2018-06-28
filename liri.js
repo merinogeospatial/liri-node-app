@@ -4,6 +4,7 @@ const Twitter = require('twitter');
 const Spotify = require('node-spotify-api');
 const inquirer = require("inquirer");
 const request = require("request");
+const fs = require('fs');
 const keys = require("./keys");
 
 
@@ -15,7 +16,7 @@ inquirer.prompt([
     type: "list",
     name: "action",
     message: "Hola, Liri-bot here! What would you like to do?",
-    choices: ["Lookup latest tweets from Conan O'Brien", "Search for a Song on Spotify", "Lookup a Movie", "Surprise me!"]
+    choices: ["Lookup latest tweets from Conan O'Brien", "Search for a Song on Spotify", "Lookup a Movie", "Do What it Says"]
   },
 
   {
@@ -26,9 +27,8 @@ inquirer.prompt([
 
 // After the prompt, store the user's response in a variable called location.
 ]).then(function(choice) {
-  
+
   if (choice.action === "Lookup latest tweets from Conan O'Brien") {
-    // Look up tweets here using Twitter api
      // Twitter Handling 
 const client = new Twitter(
   keys.twitter
@@ -51,12 +51,49 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
   else if (choice.action === "Search for a Song on Spotify") {
     // Lookup song using Spotify api
     // Spotify Handling
+    // const spotify = new Spotify(keys.spotify);
+    chosenSong = choice.parameter;
+    searchSong(chosenSong);
+  }
+  else if (choice.action === "Lookup a Movie") {
+    // Lookup movie using omdb (use request!)
+    chosenMovie = choice.parameter;
+    searchMovie(chosenMovie);
+  }
+  else if (choice.action === "Do What it Says") {
+    // Use fs to read random.text and use as command
+    fs.readFile('./random.txt','utf8', (err, data) => {
+      if (err) throw err;
+      action = data.split(",")[0];
+      choice = data.split(",")[1];
+
+      if (action === "Search for a Song on Spotify") {
+        searchSong(choice);
+      }
+
+      else if (action === "Lookup a Movie") {
+        searchMovie(choice);
+      }
+      
+    });
+  }
+});
+
+function searchSong(song) {
+  // Lookup song using Spotify api
+    // Spotify Handling
     const spotify = new Spotify(keys.spotify);
-    song = choice.parameter;
+
+    if (song === '') {
+      song = 'The Sign by Ace of Base'
+    }
+    else {
+    console.log("Searching for your song...")
+    }
     spotify.search({ type: 'track', query: song }, function(err, data) {
 
     if (err) {
-      console.log("Something went");
+      console.log("Something went wrong!");
     }
     else {
     console.log("|=======================================================");
@@ -70,47 +107,39 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
     console.log("|=======================================================");
     }
   });
-  }
-  else if (choice.action === "Lookup a Movie") {
-    // Lookup movie using omdb (use request!)
-    request('http://www.omdbapi.com/?apikey=trilogy&t=' + choice.parameter, function (error, response, body) {
+}
 
-      movie = JSON.parse(body);
+function searchMovie(search) {
 
-      if (choice.parameter === '') {
-        console.log("You didn't type in a movie!");
-      }
-      else if (error) {
-        console.log("Uh oh. Something went wrong! Error: ", error);
-        console.log('statusCode:', response && response.statusCode); 
-      }
-      else {
-        console.log("================================================== ");
-        console.log("|| *Title* ---", movie.Title);
-        console.log("|| ..............................................");
-        console.log("|| *Year released* ---", movie.Year);
-        console.log("|| ..............................................");
-        console.log("|| *IMDB rating* ---", movie.Ratings[0].Value);
-        console.log("|| ..............................................");
-        console.log("|| *Rotten Tomatoes score* ---", movie.Ratings[1].Value);
-        console.log("|| ..............................................");
-        console.log("|| *Country* ---", movie.Country);
-        console.log("|| ..............................................");
-        console.log("|| *Language(s)* ---", movie.Language)
-        console.log("|| ..............................................");
-        console.log("|| *Cast* ---", movie.Actors);
-        console.log("==================================================");
-        console.log("*Plot: ", movie.Plot);
-        console.log("==================================================");
-      }
-    });
-  }
-  else if (choice.action === "Surprise me!") {
-    // Use fs to read random.text and use as command
-    console.log('Reading random.txt');
-  }
-});
+  request('http://www.omdbapi.com/?apikey=trilogy&t=' + search, function (error, response, body) {
 
+    movie = JSON.parse(body);
 
-
-
+    if (search === '') {
+      console.log("You didn't type in a movie!");
+    }
+    else if (error) {
+      console.log("Uh oh. Something went wrong! Error: ", error);
+      console.log('statusCode:', response && response.statusCode); 
+    }
+    else {
+      console.log("================================================== ");
+      console.log("|| *Title* ---", movie.Title);
+      console.log("|| ..............................................");
+      console.log("|| *Year released* ---", movie.Year);
+      console.log("|| ..............................................");
+      console.log("|| *IMDB rating* ---", movie.Ratings[0].Value);
+      console.log("|| ..............................................");
+      console.log("|| *Rotten Tomatoes score* ---", movie.Ratings[1].Value);
+      console.log("|| ..............................................");
+      console.log("|| *Country* ---", movie.Country);
+      console.log("|| ..............................................");
+      console.log("|| *Language(s)* ---", movie.Language)
+      console.log("|| ..............................................");
+      console.log("|| *Cast* ---", movie.Actors);
+      console.log("==================================================");
+      console.log("*Plot: ", movie.Plot);
+      console.log("==================================================");
+    }
+  });
+}
