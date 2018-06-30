@@ -10,74 +10,80 @@ const keys = require("./keys");
 
 // User interaction with acquirer
 // Prompt the user to provide location information.
-inquirer.prompt([
+function askUser() {
+  inquirer.prompt([
 
-  {
-    type: "list",
-    name: "action",
-    message: "Hola, Liri-bot here! What would you like to do?",
-    choices: ["Lookup latest tweets from Conan O'Brien", "Search for a Song on Spotify", "Lookup a Movie", "Do What it Says"]
-  },
-
-  {
-    type: "input",
-    name: "parameter",
-    message: "Please type in the name the song or movie you would like to search! If you're not searching for anything just press 'enter'."
-  }
-
-// After the prompt, store the user's response in a variable called location.
-]).then(function(choice) {
-
-  if (choice.action === "Lookup latest tweets from Conan O'Brien") {
-     // Twitter Handling 
-const client = new Twitter(
-  keys.twitter
-);
- 
-var params = {screen_name: 'ConanOBrien'};
-client.get('statuses/user_timeline', params, function(error, tweets, response) {
-  if (!error) {
-    for ( let i = 0; i < 20; i++) {
-      console.log("============================================================================================================================================")
-      console.log("||");
-      console.log( "|| (" + (i+1) + ") " +tweets[i].created_at.split(" +")[0] + "|| > " + tweets[i].text);
-      console.log("||");
+    {
+      type: "list",
+      name: "action",
+      message: "Hola, Liri-bot here! What would you like to do?",
+      choices: ["Lookup latest tweets from Conan O'Brien", "Search for a Song on Spotify", "Lookup a Movie", "Do What it Says"]
+    },
+  
+    {
+      type: "input",
+      name: "parameter",
+      message: "Please type in the name the song or movie you would like to search! If you're not searching for anything just press 'enter'."
     }
-    console.log("============================================================================================================================================")
-  }
-});
-
-  }
-  else if (choice.action === "Search for a Song on Spotify") {
-    // Lookup song using Spotify api
-    // Spotify Handling
-    // const spotify = new Spotify(keys.spotify);
-    chosenSong = choice.parameter;
-    searchSong(chosenSong);
-  }
-  else if (choice.action === "Lookup a Movie") {
-    // Lookup movie using omdb (use request!)
-    chosenMovie = choice.parameter;
-    searchMovie(chosenMovie);
-  }
-  else if (choice.action === "Do What it Says") {
-    // Use fs to read random.text and use as command
-    fs.readFile('./random.txt','utf8', (err, data) => {
-      if (err) throw err;
-      action = data.split(",")[0];
-      choice = data.split(",")[1];
-
-      if (action === "Search for a Song on Spotify") {
-        searchSong(choice);
+  
+  // After the prompt, store the user's response in a variable called location.
+  ]).then(function(choice) {
+  
+    if (choice.action === "Lookup latest tweets from Conan O'Brien") {
+       // Twitter Handling 
+  const client = new Twitter(
+    keys.twitter
+  );
+   
+  var params = {screen_name: 'ConanOBrien'};
+  client.get('statuses/user_timeline', params, function(error, tweets, response) {
+    if (!error) {
+      for ( let i = 0; i < 20; i++) {
+        console.log("============================================================================================================================================")
+        console.log("||");
+        console.log( "|| (" + (i+1) + ") " +tweets[i].created_at.split(" +")[0] + "|| > " + tweets[i].text);
+        console.log("||");
       }
+      console.log("============================================================================================================================================")
+    }
+  });
+  
+    }
+    else if (choice.action === "Search for a Song on Spotify") {
+      // Lookup song using Spotify api
+      // Spotify Handling
+      // const spotify = new Spotify(keys.spotify);
+      chosenSong = choice.parameter;
+      searchSong(chosenSong);
+    }
+    else if (choice.action === "Lookup a Movie") {
+      // Lookup movie using omdb (use request!)
+      chosenMovie = choice.parameter;
+      searchMovie(chosenMovie);
+    }
+    else if (choice.action === "Do What it Says") {
+      // Use fs to read random.text and use as command
+      fs.readFile('./random.txt','utf8', (err, data) => {
+        if (err) throw err;
+        action = data.split(",")[0];
+        choice = data.split(",")[1];
+  
+        if (action === "Search for a Song on Spotify") {
+          searchSong(choice);
+        }
+  
+        else if (action === "Lookup a Movie") {
+          searchMovie(choice);
+        }
+        
+      });
+    }
 
-      else if (action === "Lookup a Movie") {
-        searchMovie(choice);
-      }
-      
-    });
-  }
-});
+
+    
+  });
+}
+
 
 function searchSong(song) {
   // Lookup song using Spotify api
@@ -143,3 +149,9 @@ function searchMovie(search) {
     }
   });
 }
+
+
+
+
+
+askUser();
